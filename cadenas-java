@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java String.format() Master - Juego Interactivo</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    // Configuración de colores institucionales UTPL para Tailwind
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            utpl: {
+              blue: '#003F69',
+              'blue-dark': '#002640',
+              'blue-light': '#005b96',
+              'blue-card': '#003456',
+              'blue-subtle': '#004975',
+              yellow: '#F9B200',
+              'yellow-hover': '#e0a000',
+              'yellow-dark': '#b37e00'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #002640;
+    }
+    .code-font {
+      font-family: 'Fira Code', monospace;
+    }
+    .slot-box {
+      min-width: 70px;
+      min-height: 38px;
+      border: 2px dashed #38bdf8;
+      transition: all 0.25s ease;
+    }
+    .slot-box.drag-over {
+      border-color: #F9B200;
+      background-color: rgba(249, 178, 0, 0.2);
+      transform: scale(1.05);
+    }
+    .slot-box.filled {
+      border-style: solid;
+      border-color: #F9B200;
+      background-color: rgba(249, 178, 0, 0.15);
+    }
+    .slot-box.correct {
+      border-color: #22c55e !important;
+      background-color: rgba(34, 197, 94, 0.2) !important;
+    }
+    .slot-box.incorrect {
+      border-color: #ef4444 !important;
+      background-color: rgba(239, 68, 68, 0.2) !important;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #002640;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #004975;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-utpl-blue-dark text-slate-100 min-h-screen flex flex-col antialiased selection:bg-utpl-yellow selection:text-utpl-blue-dark">
+
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR (Paleta UTPL) -->
+  <header class="bg-utpl-blue border-b border-utpl-blue-light/50 sticky top-0 z-50 px-4 py-3 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-utpl-yellow flex items-center justify-center shadow-md shadow-utpl-yellow/20">
+          <i class="fa-brands fa-java text-utpl-blue-dark font-extrabold text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white flex items-center gap-2">
+            Taller Evaluativo: Java String.format()
+            <span class="text-xs bg-utpl-yellow text-utpl-blue-dark font-black px-2 py-0.5 rounded-full uppercase tracking-wider">UTPL</span>
+          </h1>
+          <p class="text-xs text-blue-200/80 font-medium">Clase 05 — Introducción a la Programación (Niveles 1 al 6)</p>
+        </div>
+      </div>
+
+      <!-- Navegación por pestañas con estilo UTPL -->
+      <nav class="flex space-x-1 bg-utpl-blue-dark/80 p-1.5 rounded-xl border border-utpl-blue-light/40 text-sm">
+        <button onclick="switchTab('activity-tab')" id="tab-btn-activity" class="tab-btn px-4 py-1.5 rounded-lg font-bold transition-all duration-200 bg-utpl-yellow text-utpl-blue-dark shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-layer-group"></i> Niveles de Práctica
+        </button>
+        <button onclick="switchTab('cheatsheet-tab')" id="tab-btn-cheatsheet" class="tab-btn px-4 py-1.5 rounded-lg font-semibold transition-all duration-200 text-blue-200 hover:text-white hover:bg-utpl-blue flex items-center gap-2">
+          <i class="fa-solid fa-book-bookmark"></i> Chuleta de Formato
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
+
+    <!-- ==================== PESTAÑA PRINCIPAL: NIVELES 1 AL 6 ==================== -->
+    <section id="activity-tab" class="tab-content flex-1 flex flex-col gap-6">
+
+      <!-- Barra de Selector de Nivel (1 al 6) y Certificado con Azul UTPL -->
+      <div class="bg-gradient-to-r from-utpl-blue to-utpl-blue-card border border-utpl-blue-light/60 rounded-2xl p-4 sm:p-5 shadow-lg flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-utpl-yellow font-bold text-xs tracking-wider uppercase mb-1">
+            <span class="w-2 h-2 rounded-full bg-utpl-yellow animate-ping"></span>
+            Progreso de la Práctica
+          </div>
+          <h2 id="current-level-heading" class="text-lg sm:text-xl font-bold text-white">Nivel 1 de 6</h2>
+        </div>
+
+        <!-- Indicadores de los 6 Niveles -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="goToLevel(0)" id="lvl-nav-0" class="w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-utpl-yellow bg-utpl-yellow text-utpl-blue-dark">1</button>
+          <button onclick="goToLevel(1)" id="lvl-nav-1" class="w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-utpl-blue-light/40 bg-utpl-blue-dark text-blue-200">2</button>
+          <button onclick="goToLevel(2)" id="lvl-nav-2" class="w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-utpl-blue-light/40 bg-utpl-blue-dark text-blue-200">3</button>
+          <button onclick="goToLevel(3)" id="lvl-nav-3" class="w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-utpl-blue-light/40 bg-utpl-blue-dark text-blue-200">4</button>
+          <button onclick="goToLevel(4)" id="lvl-nav-4" class="w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-utpl-blue-light/40 bg-utpl-blue-dark text-blue-200">5</button>
+          <button onclick="goToLevel(5)" id="lvl-nav-5" class="w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-utpl-blue-light/40 bg-utpl-blue-dark text-blue-200">6</button>
+          <button onclick="goToReport()" id="lvl-nav-report" class="px-3 h-9 rounded-xl font-bold text-xs flex items-center gap-1.5 transition border border-utpl-yellow/60 bg-utpl-blue-dark text-utpl-yellow hover:bg-utpl-yellow hover:text-utpl-blue-dark">
+            <i class="fa-solid fa-graduation-cap"></i> Finalizar y Certificar
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenedor del Nivel Activo (Editor + Laboratorio Integrado) -->
+      <div id="level-play-area" class="space-y-6">
+        
+        <!-- Enunciado del Nivel -->
+        <div class="bg-utpl-blue border border-utpl-blue-light/50 rounded-2xl p-5 shadow-md">
+          <h3 id="level-title" class="text-xl font-bold text-white mb-1 flex items-center gap-2">
+            <i class="fa-solid fa-code text-utpl-yellow"></i> Nivel 1: Construcción Básica (%s, %d)
+          </h3>
+          <p id="level-instruction" class="text-sm text-blue-100">
+            Aprende a combinar un texto y un valor entero respetando el orden posicional de los argumentos en String.format().
+          </p>
+        </div>
+
+        <!-- Panel de Desafío y Laboratorio en 2 Columnas -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Columna Izquierda (8 cols): Editor Interactivo de Desafío -->
+          <div class="lg:col-span-8 bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl shadow-xl overflow-hidden flex flex-col">
+            <div class="bg-utpl-blue-dark px-4 py-3 border-b border-utpl-blue-light/40 flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-utpl-yellow inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>
+                <span id="level-filename" class="ml-2 text-xs text-blue-200 code-font">EjercicioNivel1.java</span>
+              </div>
+              <span id="level-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-utpl-yellow/20 text-utpl-yellow border border-utpl-yellow/40">
+                Pendiente de resolver
+              </span>
+            </div>
+
+            <div class="p-5 sm:p-6 code-font text-sm leading-relaxed overflow-x-auto space-y-4">
+              <!-- Variables del Nivel -->
+              <div class="bg-utpl-blue-dark/80 p-4 rounded-xl border border-utpl-blue-light/30">
+                <div class="text-xs text-blue-300 uppercase font-bold tracking-wider mb-2 font-sans flex items-center gap-2">
+                  <i class="fa-solid fa-memory text-utpl-yellow"></i> Variables declaradas en memoria:
+                </div>
+                <div id="level-variables" class="space-y-1 text-slate-200"></div>
+              </div>
+
+              <!-- Plantilla interactiva con ranuras -->
+              <div class="bg-utpl-blue/40 p-5 rounded-xl border border-utpl-blue-light/50">
+                <p class="text-xs text-blue-200 mb-2 font-sans flex items-center gap-1.5">
+                  <i class="fa-solid fa-hand-pointer text-utpl-yellow"></i> Completa los especificadores en la plantilla:
+                </p>
+                <div class="text-slate-100 flex flex-wrap items-center gap-2" id="level-template-area"></div>
+              </div>
+
+              <div class="text-xs sm:text-sm pl-2">
+                <span class="text-blue-200 font-bold font-sans">Argumentos pasados a format:</span>
+                <span id="level-args" class="text-utpl-yellow font-bold ml-2"></span>
+              </div>
+
+              <!-- Consola de salida esperada -->
+              <div class="pt-2">
+                <div class="text-xs text-blue-300 mb-1 flex items-center justify-between font-sans font-medium">
+                  <span><i class="fa-solid fa-terminal text-utpl-yellow mr-1"></i> Salida que debe producir Java:</span>
+                </div>
+                <div id="level-expected-output" class="bg-black/70 p-3 rounded-xl border border-utpl-blue-light/40 text-emerald-300 text-xs sm:text-sm"></div>
+              </div>
+            </div>
+
+            <!-- Botones de Acción del Desafío con botón UTPL amarillo -->
+            <div class="bg-utpl-blue-dark px-6 py-4 border-t border-utpl-blue-light/40 flex flex-wrap items-center justify-between gap-4">
+              <button onclick="clearCurrentSlots()" class="px-4 py-2 rounded-xl text-blue-200 hover:text-white bg-utpl-blue hover:bg-utpl-blue-light/60 font-semibold text-xs sm:text-sm transition flex items-center gap-2 border border-utpl-blue-light/30">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Limpiar Huecos
+              </button>
+
+              <button onclick="validateCurrentLevel()" id="btn-validate" class="px-6 py-2.5 rounded-xl bg-utpl-yellow hover:bg-utpl-yellow-hover text-utpl-blue-dark font-extrabold text-sm shadow-lg shadow-utpl-yellow/20 transition transform active:scale-95 flex items-center gap-2">
+                <i class="fa-solid fa-check-double"></i> Validar Solución
+              </button>
+            </div>
+          </div>
+
+          <!-- Columna Derecha (4 cols): Fichas + Laboratorio Dinámico del Nivel -->
+          <div class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- Fichas disponibles -->
+            <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-5 shadow-xl">
+              <h4 class="font-bold text-white text-sm flex items-center justify-between mb-2">
+                <span><i class="fa-solid fa-puzzle-piece text-utpl-yellow mr-2"></i> Fichas del Nivel</span>
+                <span class="text-[11px] text-blue-200 font-medium">Clic o Arrastrar</span>
+              </h4>
+              <p class="text-xs text-blue-200/80 mb-3">Toca una ficha para asignarla al primer hueco disponible:</p>
+              <div id="level-tokens-dock" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Laboratorio en tiempo real del Nivel -->
+            <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-5 shadow-xl">
+              <h4 class="font-bold text-white text-sm flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-flask-vial text-utpl-yellow"></i> Laboratorio del Nivel
+              </h4>
+              <p class="text-xs text-blue-200/80 mb-3">
+                Edita los valores en vivo para observar cómo reacciona Java y cómo cambia la salida:
+              </p>
+
+              <div id="level-sandbox-controls" class="space-y-3 text-xs"></div>
+
+              <!-- Salida de prueba en vivo -->
+              <div class="mt-4 pt-3 border-t border-utpl-blue-light/30">
+                <span class="text-[11px] font-semibold text-blue-300 uppercase tracking-wider block mb-1">
+                  Vista previa de la salida generada:
+                </span>
+                <div id="level-sandbox-preview" class="p-3 bg-black/60 rounded-xl border border-utpl-blue-light/40 text-utpl-yellow code-font text-xs min-h-[48px] break-all font-semibold"></div>
+              </div>
+            </div>
+
+            <!-- Retroalimentación pedagógica -->
+            <div id="level-feedback-box" class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4 text-xs text-blue-100">
+              <div class="flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-info text-utpl-yellow text-base mt-0.5"></i>
+                <div id="level-feedback-text">
+                  Observa atentamente los tipos de datos de las variables declaradas arriba para escoger los especificadores precisos.
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón Nivel Siguiente con estilo UTPL -->
+            <button id="btn-next-level" onclick="goNextLevel()" class="hidden w-full py-3 px-4 bg-utpl-yellow hover:bg-utpl-yellow-hover text-utpl-blue-dark font-extrabold rounded-xl shadow-lg shadow-utpl-yellow/25 transition transform active:scale-95 flex items-center justify-center gap-2 text-sm animate-pulse">
+              <span>Continuar al Siguiente Nivel</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== PANTALLA FINAL: CERTIFICACIÓN Y EVALUACIÓN ==================== -->
+      <div id="final-report-area" class="hidden bg-utpl-blue-card border border-utpl-blue-light/50 rounded-2xl p-6 sm:p-8 shadow-2xl max-w-4xl mx-auto w-full">
+        <div class="text-center max-w-2xl mx-auto mb-8">
+          <div class="w-16 h-16 rounded-2xl bg-utpl-yellow flex items-center justify-center mx-auto mb-3 shadow-lg shadow-utpl-yellow/25 text-3xl text-utpl-blue-dark">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Registro y Certificado de Práctica</h2>
+          <p class="text-sm text-blue-200 mt-2">
+            Ingresa tus datos personales y tu usuario de GitHub para generar tu hoja de reporte y calificar tu desempeño en la Clase 05.
+          </p>
+        </div>
+
+        <!-- Formulario del Estudiante -->
+        <div class="bg-utpl-blue-dark p-6 rounded-2xl border border-utpl-blue-light/40 mb-6">
+          <h4 class="text-sm font-bold text-utpl-yellow uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-id-card"></i> Datos del Estudiante
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-blue-200 mb-1">Nombre Completo:</label>
+              <input type="text" id="student-name" placeholder="Ej. Juan Carlos Pérez" oninput="updateCertificate()" class="w-full bg-utpl-blue border border-utpl-blue-light rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-utpl-yellow">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-blue-200 mb-1">Usuario de GitHub:</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-blue-300">
+                  <i class="fa-brands fa-github"></i>
+                </span>
+                <input type="text" id="student-github" placeholder="Ej. juanperez-dev" oninput="updateCertificate()" class="w-full bg-utpl-blue border border-utpl-blue-light rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-utpl-yellow">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta del Certificado Generado con Identidad UTPL -->
+        <div id="certificate-card" class="bg-gradient-to-b from-utpl-blue-dark via-utpl-blue-card to-utpl-blue border-2 border-utpl-yellow/70 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-utpl-blue-light/40">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-utpl-yellow flex items-center justify-center font-black text-utpl-blue-dark text-xl">
+                UTPL
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white">Certificado de Aprobación de Práctica</h3>
+                <p class="text-xs text-blue-200">Universidad Técnica Particular de Loja &bull; Introducción a la Programación</p>
+              </div>
+            </div>
+            <div class="text-right bg-utpl-blue-dark/70 px-4 py-2 rounded-xl border border-utpl-blue-light/40">
+              <span class="text-xs text-blue-300 uppercase block font-semibold">Calificación Obtenida</span>
+              <span id="cert-score" class="text-3xl font-extrabold text-utpl-yellow code-font">10.0 / 10.0</span>
+            </div>
+          </div>
+
+          <div class="py-6 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div class="p-3 bg-utpl-blue-dark/70 rounded-xl border border-utpl-blue-light/30">
+                <span class="text-xs text-blue-300 block mb-0.5">Estudiante:</span>
+                <span id="cert-student-name" class="font-bold text-white text-base">---</span>
+              </div>
+              <div class="p-3 bg-utpl-blue-dark/70 rounded-xl border border-utpl-blue-light/30">
+                <span class="text-xs text-blue-300 block mb-0.5">Usuario GitHub:</span>
+                <span id="cert-student-github" class="font-bold text-utpl-yellow font-mono text-base">@---</span>
+              </div>
+            </div>
+
+            <!-- Desglose de Niveles Completados -->
+            <div class="bg-utpl-blue-dark/50 p-4 rounded-xl border border-utpl-blue-light/30">
+              <h5 class="text-xs font-bold text-blue-200 uppercase tracking-wider mb-2">Desglose de los 6 Niveles:</h5>
+              <div id="levels-summary-list" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                <!-- Se llena dinámicamente con JS -->
+              </div>
+            </div>
+
+            <div class="text-xs text-blue-200/90 bg-utpl-blue-dark/60 p-3 rounded-xl border border-utpl-blue-light/30">
+              <strong class="text-white">Competencias evaluadas:</strong> Dominio de especificadores (<code class="text-utpl-yellow font-bold">%s</code>, <code class="text-utpl-yellow font-bold">%d</code>, <code class="text-utpl-yellow font-bold">%.2f</code>, <code class="text-utpl-yellow font-bold">%c</code>, <code class="text-utpl-yellow font-bold">%b</code>, <code class="text-utpl-yellow font-bold">%%</code>), concordancia de tipos, orden estricto de variables y principio de no-mutabilidad de variables en Java.
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-utpl-blue-light/40 flex flex-wrap items-center justify-between gap-3 text-xs text-blue-300">
+            <span id="cert-date">Fecha de emisión: --/--/----</span>
+            <span class="font-mono text-utpl-yellow">Hash: UTPL-CLASE05-STRFORMAT</span>
+          </div>
+        </div>
+
+        <!-- Botones de Acción Final con color UTPL -->
+        <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+          <button onclick="goToLevel(0)" class="px-5 py-2.5 rounded-xl text-blue-200 hover:text-white bg-utpl-blue hover:bg-utpl-blue-light font-semibold text-xs sm:text-sm transition flex items-center gap-2 border border-utpl-blue-light/40">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Repasar desde el Nivel 1
+          </button>
+          <button onclick="copyCertificateReport()" class="px-6 py-2.5 rounded-xl bg-utpl-yellow hover:bg-utpl-yellow-hover text-utpl-blue-dark font-extrabold text-sm shadow-lg shadow-utpl-yellow/25 transition flex items-center gap-2">
+            <i class="fa-regular fa-clipboard"></i> Copiar Resumen para Envío
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== PESTAÑA: CHULETA DE ESPECIFICADORES (ESTILO UTPL) ==================== -->
+    <section id="cheatsheet-tab" class="tab-content hidden flex-1 flex flex-col gap-6">
+      <div class="bg-utpl-blue border border-utpl-blue-light/50 rounded-2xl p-5 shadow-lg">
+        <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-book-bookmark text-utpl-yellow"></i> Tabla Maestra de Especificadores
+        </h2>
+        <p class="text-blue-200 text-sm mt-1">
+          Guía de consulta rápida basada en el contenido oficial de la Clase 05.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%s</span>
+            <span class="text-xs text-blue-200 font-semibold">Cadena (String)</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Representa texto o cualquier dato convertido a cadena.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("Hola %s", "Luis") &rarr; "Hola Luis"
+          </div>
+        </div>
+
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%d</span>
+            <span class="text-xs text-blue-200 font-semibold">Entero (int, long)</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Decimal integer. No admite números con punto decimal.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("Edad: %d", 20) &rarr; "Edad: 20"
+          </div>
+        </div>
+
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%.2f</span>
+            <span class="text-xs text-blue-200 font-semibold">Decimal (2 cifras)</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Redondea la representación a dos posiciones decimales.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("%.2f", 850.758) &rarr; "850.76"
+          </div>
+        </div>
+
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%.1f</span>
+            <span class="text-xs text-blue-200 font-semibold">Decimal (1 cifra)</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Muestra una sola posición decimal redondeada.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("%.1f", 9.256) &rarr; "9.3"
+          </div>
+        </div>
+
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%c</span>
+            <span class="text-xs text-blue-200 font-semibold">Carácter (char)</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Para caracteres únicos delimitados por comilla simple.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("Sección %c", 'A') &rarr; "Sección A"
+          </div>
+        </div>
+
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%b</span>
+            <span class="text-xs text-blue-200 font-semibold">Booleano (boolean)</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Representa directamente valores lógicos true o false.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("Estado: %b", true) &rarr; "Estado: true"
+          </div>
+        </div>
+
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%%</span>
+            <span class="text-xs text-blue-200 font-semibold">Porcentaje literal</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Escribe el símbolo '%' en el texto sin confundir al formateador.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("%d%%", 15) &rarr; "15%"
+          </div>
+        </div>
+
+        <div class="bg-utpl-blue-card border border-utpl-blue-light/40 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="code-font text-lg font-bold text-utpl-yellow bg-utpl-blue-dark px-2.5 py-1 rounded-lg border border-utpl-yellow/30">%n</span>
+            <span class="text-xs text-blue-200 font-semibold">Salto de línea</span>
+          </div>
+          <p class="text-xs text-blue-100 mb-2">Salto de línea compatible con cualquier sistema operativo.</p>
+          <div class="bg-utpl-blue-dark p-2.5 rounded text-xs code-font text-emerald-300 border border-utpl-blue-light/20">
+            String.format("Hola%nMundo") &rarr; Salto limpio
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE MENSAJES (Sustituto de alert, colores UTPL) -->
+  <div id="game-modal" class="fixed inset-0 bg-utpl-blue-dark/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-utpl-blue-card border-2 border-utpl-yellow/60 rounded-2xl max-w-md w-full p-6 shadow-2xl text-center">
+      <div id="modal-icon-container" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4 text-3xl"></div>
+      <h3 id="modal-title" class="text-xl font-bold text-white mb-2">Mensaje</h3>
+      <p id="modal-message" class="text-blue-100 text-sm mb-6 leading-relaxed"></p>
+      <button onclick="closeModal()" class="w-full py-2.5 px-4 bg-utpl-yellow hover:bg-utpl-yellow-hover text-utpl-blue-dark font-extrabold rounded-xl transition">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <footer class="bg-utpl-blue-dark border-t border-utpl-blue-light/30 py-4 text-center text-xs text-blue-300/80">
+    Universidad Técnica Particular de Loja &bull; Clase 05: Manejo de cadenas en Java: String.format()
+  </footer>
+
+  <!-- ==================== LÓGICA JAVASCRIPT ==================== -->
+  <script>
+    // Sintetizador de audio Web Audio API
+    class SoundFX {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+      }
+      playTone(freq, type, duration, delay = 0) {
+        try {
+          this.init();
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+          gain.gain.setValueAtTime(0.1, this.ctx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + delay);
+          osc.stop(this.ctx.currentTime + delay + duration);
+        } catch (e) {}
+      }
+      success() {
+        this.playTone(523.25, 'sine', 0.12, 0);
+        this.playTone(659.25, 'sine', 0.12, 0.1);
+        this.playTone(783.99, 'sine', 0.25, 0.2);
+      }
+      error() {
+        this.playTone(200, 'sawtooth', 0.18, 0);
+        this.playTone(160, 'sawtooth', 0.22, 0.12);
+      }
+      click() {
+        this.playTone(420, 'triangle', 0.04, 0);
+      }
+    }
+
+    const sound = new SoundFX();
+
+    // ==================== DEFINICIÓN DE LOS 6 NIVELES ====================
+    const levelsData = [
+      {
+        id: 1,
+        filename: "Nivel1Estudiante.java",
+        title: "Nivel 1: Datos Básicos del Estudiante (%s y %d)",
+        instruction: "Configura la plantilla de String.format() para presentar el nombre de Luis y su edad exacta.",
+        vars: [
+          { name: "nombre", type: "String", val: '"Luis"', inputVal: "Luis", kind: "text" },
+          { name: "edad", type: "int", val: "20", inputVal: 20, kind: "number" }
+        ],
+        args: ["nombre", "edad"],
+        parts: ['"Estudiante: ', ', Edad: ', ' años"'],
+        solution: ["%s", "%d"],
+        expected: "Estudiante: Luis, Edad: 20 años",
+        tokens: ["%s", "%d", "%f", "%.2f", "%b"],
+        labTemplate: "Estudiante: %s, Edad: %d años"
+      },
+      {
+        id: 2,
+        filename: "Nivel2Producto.java",
+        title: "Nivel 2: Control de Precios y Dos Decimales (%.2f)",
+        instruction: "El precio 850.758 debe representarse redondeado a 2 cifras ($850.76) junto con el nombre del producto y la cantidad.",
+        vars: [
+          { name: "producto", type: "String", val: '"Computadora"', inputVal: "Computadora", kind: "text" },
+          { name: "cantidad", type: "int", val: "3", inputVal: 3, kind: "number" },
+          { name: "precio", type: "double", val: "850.758", inputVal: 850.758, step: "0.001", kind: "number" }
+        ],
+        args: ["producto", "cantidad", "precio"],
+        parts: ['"Producto: ', ', Cantidad: ', ', Precio: $', '"'],
+        solution: ["%s", "%d", "%.2f"],
+        expected: "Producto: Computadora, Cantidad: 3, Precio: $850.76",
+        tokens: ["%s", "%d", "%.2f", "%.1f", "%f"],
+        labTemplate: "Producto: %s, Cantidad: %d, Precio: $%.2f"
+      },
+      {
+        id: 3,
+        filename: "Nivel3OrdenArgumentos.java",
+        title: "Nivel 3: El Orden Estricto de los Argumentos",
+        instruction: "¡Cuidado! En los argumentos pasados a format(), primero se envía el promedio y luego el nombre.",
+        vars: [
+          { name: "promedio", type: "double", val: "9.256", inputVal: 9.256, step: "0.001", kind: "number" },
+          { name: "nombre", type: "String", val: '"María"', inputVal: "María", kind: "text" }
+        ],
+        args: ["promedio", "nombre"],
+        parts: ['"Promedio: ', ' obtenido por: ', '"'],
+        solution: ["%.2f", "%s"],
+        expected: "Promedio: 9.26 obtenido por: María",
+        tokens: ["%s", "%.2f", "%d", "%c", "%b"],
+        labTemplate: "Promedio: %.2f obtenido por: %s"
+      },
+      {
+        id: 4,
+        filename: "Nivel4TiposPrimitivos.java",
+        title: "Nivel 4: Caracteres (%c) y Booleanos (%b)",
+        instruction: "Construye el reporte que incluye una categoría literal ('A') con %c y el estado booleano con %b.",
+        vars: [
+          { name: "letra", type: "char", val: "'A'", inputVal: "A", kind: "char" },
+          { name: "nota", type: "double", val: "8.756", inputVal: 8.756, step: "0.001", kind: "number" },
+          { name: "aprobado", type: "boolean", val: "true", inputVal: true, kind: "bool" }
+        ],
+        args: ["letra", "nota", "aprobado"],
+        parts: ['"Nivel: ', ' | Calificación: ', ' | Registrado: ', '"'],
+        solution: ["%c", "%.1f", "%b"],
+        expected: "Nivel: A | Calificación: 8.8 | Registrado: true",
+        tokens: ["%c", "%.1f", "%.2f", "%b", "%s", "%d"],
+        labTemplate: "Nivel: %c | Calificación: %.1f | Registrado: %b"
+      },
+      {
+        id: 5,
+        filename: "Nivel5Porcentaje.java",
+        title: "Nivel 5: Imprimir el Símbolo de Porcentaje (%%)",
+        instruction: "Como el signo % inicia un especificador, para imprimir un '%' real en pantalla se escribe '%%'.",
+        vars: [
+          { name: "descuento", type: "int", val: "15", inputVal: 15, kind: "number" },
+          { name: "cliente", type: "String", val: '"Ana"', inputVal: "Ana", kind: "text" }
+        ],
+        args: ["descuento", "cliente"],
+        parts: ['"Descuento del ', '%% aplicado al cliente: ', '"'],
+        solution: ["%d", "%s"],
+        expected: "Descuento del 15% aplicado al cliente: Ana",
+        tokens: ["%d", "%s", "%%", "%f", "%.2f"],
+        labTemplate: "Descuento del %d%% aplicado al cliente: %s"
+      },
+      {
+        id: 6,
+        filename: "Nivel6ReporteMaestro.java",
+        title: "Nivel 6: Reporte Completo de Calificaciones",
+        instruction: "Integra todo lo aprendido: Estudiante (%s), Materia (%s), Créditos (%d), Promedio a 2 decimales (%.2f) y Estado (%b).",
+        vars: [
+          { name: "estudiante", type: "String", val: '"Pedro"', inputVal: "Pedro", kind: "text" },
+          { name: "materia", type: "String", val: '"Programación"', inputVal: "Programación", kind: "text" },
+          { name: "creditos", type: "int", val: "4", inputVal: 4, kind: "number" },
+          { name: "calificacion", type: "double", val: "9.489", inputVal: 9.489, step: "0.001", kind: "number" },
+          { name: "aprobado", type: "boolean", val: "true", inputVal: true, kind: "bool" }
+        ],
+        args: ["estudiante", "materia", "creditos", "calificacion", "aprobado"],
+        parts: ['"Alumno: ', ' | Curso: ', ' (', ' créditos) | Nota: ', ' | Aprobado: ', '"'],
+        solution: ["%s", "%s", "%d", "%.2f", "%b"],
+        expected: "Alumno: Pedro | Curso: Programación (4 créditos) | Nota: 9.49 | Aprobado: true",
+        tokens: ["%s", "%s", "%d", "%.2f", "%.1f", "%b", "%c"],
+        labTemplate: "Alumno: %s | Curso: %s (%d créditos) | Nota: %.2f | Aprobado: %b"
+      }
+    ];
+
+    // Estado del taller
+    let currentLevelIndex = 0;
+    let completedLevels = [false, false, false, false, false, false];
+    let levelAttempts = [0, 0, 0, 0, 0, 0];
+    let currentSlots = [];
+    let sandboxValues = {};
+
+    window.onload = function() {
+      loadLevel(0);
+      updateCertDate();
+    };
+
+    function switchTab(tabId) {
+      sound.click();
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-utpl-yellow', 'text-utpl-blue-dark', 'shadow-sm', 'font-bold');
+        btn.classList.add('text-blue-200');
+      });
+
+      const activeBtn = tabId === 'activity-tab' ? document.getElementById('tab-btn-activity') : document.getElementById('tab-btn-cheatsheet');
+      if (activeBtn) {
+        activeBtn.classList.remove('text-blue-200');
+        activeBtn.classList.add('bg-utpl-yellow', 'text-utpl-blue-dark', 'shadow-sm', 'font-bold');
+      }
+    }
+
+    function goToLevel(index) {
+      sound.click();
+      document.getElementById('level-play-area').classList.remove('hidden');
+      document.getElementById('final-report-area').classList.add('hidden');
+      loadLevel(index);
+    }
+
+    function goToReport() {
+      sound.click();
+      document.getElementById('level-play-area').classList.add('hidden');
+      document.getElementById('final-report-area').classList.remove('hidden');
+      updateCertificate();
+    }
+
+    function updateNavButtons() {
+      for (let i = 0; i < 6; i++) {
+        const btn = document.getElementById(`lvl-nav-${i}`);
+        if (!btn) continue;
+
+        if (i === currentLevelIndex) {
+          btn.className = 'w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-utpl-yellow bg-utpl-yellow text-utpl-blue-dark ring-2 ring-utpl-yellow/40';
+        } else if (completedLevels[i]) {
+          btn.className = 'w-9 h-9 rounded-xl font-extrabold text-xs flex items-center justify-center transition border border-emerald-400 bg-emerald-600 text-white';
+        } else {
+          btn.className = 'w-9 h-9 rounded-xl font-bold text-xs flex items-center justify-center transition border border-utpl-blue-light/40 bg-utpl-blue-dark text-blue-200';
+        }
+      }
+    }
+
+    function loadLevel(index) {
+      currentLevelIndex = index;
+      const level = levelsData[index];
+      currentSlots = new Array(level.solution.length).fill(null);
+      sandboxValues = {};
+
+      document.getElementById('current-level-heading').textContent = `Nivel ${index + 1} de 6`;
+      document.getElementById('level-title').innerHTML = `<i class="fa-solid fa-code text-utpl-yellow"></i> ${level.title}`;
+      document.getElementById('level-instruction').textContent = level.instruction;
+      document.getElementById('level-filename').textContent = level.filename;
+
+      const statusPill = document.getElementById('level-status-pill');
+      if (completedLevels[index]) {
+        statusPill.textContent = "Completado";
+        statusPill.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-500/50";
+      } else {
+        statusPill.textContent = "Pendiente de resolver";
+        statusPill.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-utpl-yellow/20 text-utpl-yellow border border-utpl-yellow/40";
+      }
+
+      // Renderizar variables
+      const varsContainer = document.getElementById('level-variables');
+      varsContainer.innerHTML = level.vars.map(v => `
+        <div>
+          <span class="text-sky-300 font-semibold">${v.type}</span>
+          <span class="text-utpl-yellow font-bold">${v.name}</span> =
+          <span class="text-amber-200">${v.val}</span>;
+        </div>
+      `).join('');
+
+      document.getElementById('level-args').textContent = level.args.join(', ');
+      document.getElementById('level-expected-output').textContent = `> ${level.expected}`;
+
+      // Reconstruir plantilla
+      const templateArea = document.getElementById('level-template-area');
+      templateArea.innerHTML = '';
+
+      const prefix = document.createElement('span');
+      prefix.className = 'text-sky-300 font-bold';
+      prefix.innerHTML = 'String <span class="text-white">mensaje</span> = <span class="text-utpl-yellow">String</span>.<span class="text-blue-200">format</span>(';
+      templateArea.appendChild(prefix);
+
+      for (let i = 0; i < level.parts.length; i++) {
+        const textSpan = document.createElement('span');
+        textSpan.className = 'text-amber-100 font-medium';
+        textSpan.textContent = level.parts[i];
+        templateArea.appendChild(textSpan);
+
+        if (i < level.solution.length) {
+          const slot = document.createElement('div');
+          slot.id = `lvl-slot-${i}`;
+          slot.className = 'slot-box inline-flex items-center justify-center px-3 py-1 rounded-lg bg-utpl-blue-dark/90 text-utpl-yellow font-bold cursor-pointer border border-dashed border-sky-400 hover:border-utpl-yellow transition';
+          slot.innerHTML = '<span class="text-blue-300/60 text-xs font-mono">[ ... ]</span>';
+
+          slot.ondragover = (e) => {
+            e.preventDefault();
+            slot.classList.add('drag-over');
+          };
+          slot.ondragleave = () => slot.classList.remove('drag-over');
+          slot.ondrop = (e) => {
+            e.preventDefault();
+            slot.classList.remove('drag-over');
+            const token = e.dataTransfer.getData('text/plain');
+            assignTokenToSlot(i, token);
+          };
+
+          slot.onclick = () => {
+            if (currentSlots[i]) {
+              sound.click();
+              removeTokenFromSlot(i);
+            }
+          };
+
+          templateArea.appendChild(slot);
+        }
+      }
+
+      const suffix = document.createElement('span');
+      suffix.className = 'text-white';
+      suffix.innerHTML = `, ${level.args.join(', ')});`;
+      templateArea.appendChild(suffix);
+
+      // Fichas
+      renderDockTokens(level.tokens);
+
+      // Laboratorio en vivo del nivel
+      buildLevelSandbox(level);
+
+      // Botón Siguiente
+      document.getElementById('btn-next-level').classList.add('hidden');
+      document.getElementById('btn-validate').classList.remove('hidden');
+
+      // Reset feedback
+      document.getElementById('level-feedback-text').innerHTML =
+        "Arrastra o haz clic en los especificadores para colocarlos en los huecos en el orden exacto que exigen los argumentos.";
+
+      updateNavButtons();
+    }
+
+    function renderDockTokens(tokens) {
+      const dock = document.getElementById('level-tokens-dock');
+      dock.innerHTML = '';
+      tokens.forEach(tok => {
+        const chip = document.createElement('div');
+        chip.draggable = true;
+        chip.className = 'px-3 py-1.5 rounded-xl bg-utpl-blue-dark hover:bg-utpl-yellow hover:text-utpl-blue-dark text-utpl-yellow font-bold code-font text-xs sm:text-sm cursor-grab active:cursor-grabbing border border-utpl-blue-light/50 shadow-sm transition select-none';
+        chip.textContent = tok;
+
+        chip.ondragstart = (e) => {
+          sound.click();
+          e.dataTransfer.setData('text/plain', tok);
+        };
+
+        chip.onclick = () => {
+          sound.click();
+          const firstEmpty = currentSlots.findIndex(val => val === null);
+          if (firstEmpty !== -1) {
+            assignTokenToSlot(firstEmpty, tok);
+          } else {
+            showModal(false, "Todos los huecos ya tienen ficha. Haz clic en uno de ellos si deseas cambiarla.");
+          }
+        };
+
+        dock.appendChild(chip);
+      });
+    }
+
+    function assignTokenToSlot(slotIndex, token) {
+      currentSlots[slotIndex] = token;
+      const el = document.getElementById(`lvl-slot-${slotIndex}`);
+      el.className = 'slot-box filled inline-flex items-center justify-center px-3 py-1 rounded-lg bg-utpl-yellow/20 text-utpl-yellow font-bold cursor-pointer border border-utpl-yellow shadow-inner';
+      el.innerHTML = `<span class="code-font text-utpl-yellow">${token}</span>`;
+      sound.click();
+    }
+
+    function removeTokenFromSlot(slotIndex) {
+      currentSlots[slotIndex] = null;
+      const el = document.getElementById(`lvl-slot-${slotIndex}`);
+      el.className = 'slot-box inline-flex items-center justify-center px-3 py-1 rounded-lg bg-utpl-blue-dark/90 text-utpl-yellow font-bold cursor-pointer border border-dashed border-sky-400 hover:border-utpl-yellow';
+      el.innerHTML = '<span class="text-blue-300/60 text-xs font-mono">[ ... ]</span>';
+    }
+
+    function clearCurrentSlots() {
+      sound.click();
+      currentSlots.forEach((_, idx) => removeTokenFromSlot(idx));
+    }
+
+    function validateCurrentLevel() {
+      const level = levelsData[currentLevelIndex];
+      levelAttempts[currentLevelIndex]++;
+
+      if (currentSlots.some(s => s === null)) {
+        sound.error();
+        showModal(false, "Debes completar todos los huecos con especificadores antes de validar.");
+        return;
+      }
+
+      let correct = true;
+      for (let i = 0; i < level.solution.length; i++) {
+        const slotEl = document.getElementById(`lvl-slot-${i}`);
+        if (currentSlots[i] === level.solution[i]) {
+          slotEl.classList.remove('incorrect');
+          slotEl.classList.add('correct');
+        } else {
+          slotEl.classList.remove('correct');
+          slotEl.classList.add('incorrect');
+          correct = false;
+        }
+      }
+
+      if (correct) {
+        sound.success();
+        completedLevels[currentLevelIndex] = true;
+        updateNavButtons();
+
+        document.getElementById('level-status-pill').textContent = "Completado";
+        document.getElementById('level-status-pill').className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-500/50";
+
+        document.getElementById('level-feedback-text').innerHTML =
+          `<strong class="text-emerald-300">¡Nivel superado con éxito!</strong> La plantilla ha generado con exactitud:<br><span class="code-font text-utpl-yellow mt-1 block">${level.expected}</span>`;
+
+        document.getElementById('btn-validate').classList.add('hidden');
+
+        if (currentLevelIndex < 5) {
+          document.getElementById('btn-next-level').classList.remove('hidden');
+        } else {
+          showModal(true, "¡Has completado todos los 6 niveles! Ahora puedes pasar a generar tu Certificado con tu Nombre y Usuario de GitHub.");
+          goToReport();
+        }
+      } else {
+        sound.error();
+        document.getElementById('level-feedback-text').innerHTML =
+          `<strong class="text-red-400">Error de compatibilidad u orden:</strong> Revisa la correspondencia entre los tipos de las variables declaradas y los especificadores ingresados.`;
+      }
+    }
+
+    function goNextLevel() {
+      if (currentLevelIndex < 5) {
+        goToLevel(currentLevelIndex + 1);
+      } else {
+        goToReport();
+      }
+    }
+
+    // ==================== LABORATORIO ESPECÍFICO DEL NIVEL ====================
+    function buildLevelSandbox(level) {
+      const controls = document.getElementById('level-sandbox-controls');
+      controls.innerHTML = '';
+
+      level.vars.forEach((v) => {
+        sandboxValues[v.name] = v.inputVal;
+
+        const row = document.createElement('div');
+        row.className = 'flex flex-col gap-1';
+
+        const label = document.createElement('label');
+        label.className = 'text-[11px] font-semibold text-blue-200 flex items-center justify-between';
+        label.innerHTML = `<span>${v.name} (<span class="text-utpl-yellow font-mono">${v.type}</span>):</span>`;
+        row.appendChild(label);
+
+        if (v.kind === 'bool') {
+          const select = document.createElement('select');
+          select.className = 'w-full bg-utpl-blue-dark border border-utpl-blue-light/50 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-utpl-yellow font-mono';
+          select.innerHTML = '<option value="true">true</option><option value="false">false</option>';
+          select.value = v.inputVal.toString();
+          select.onchange = (e) => {
+            sandboxValues[v.name] = (e.target.value === 'true');
+            refreshLevelSandboxPreview(level);
+          };
+          row.appendChild(select);
+        } else if (v.kind === 'char') {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.maxLength = 1;
+          input.value = v.inputVal;
+          input.className = 'w-full bg-utpl-blue-dark border border-utpl-blue-light/50 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-utpl-yellow font-mono';
+          input.oninput = (e) => {
+            sandboxValues[v.name] = e.target.value || ' ';
+            refreshLevelSandboxPreview(level);
+          };
+          row.appendChild(input);
+        } else {
+          const input = document.createElement('input');
+          input.type = v.kind === 'number' ? 'number' : 'text';
+          if (v.step) input.step = v.step;
+          input.value = v.inputVal;
+          input.className = 'w-full bg-utpl-blue-dark border border-utpl-blue-light/50 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-utpl-yellow font-mono';
+          input.oninput = (e) => {
+            sandboxValues[v.name] = v.kind === 'number' ? (parseFloat(e.target.value) || 0) : e.target.value;
+            refreshLevelSandboxPreview(level);
+          };
+          row.appendChild(input);
+        }
+
+        controls.appendChild(row);
+      });
+
+      refreshLevelSandboxPreview(level);
+    }
+
+    function refreshLevelSandboxPreview(level) {
+      const preview = document.getElementById('level-sandbox-preview');
+      let out = level.labTemplate;
+
+      level.args.forEach(argName => {
+        const val = sandboxValues[argName];
+        if (typeof val === 'number') {
+          if (out.includes('%.2f')) {
+            out = out.replace('%.2f', val.toFixed(2));
+          } else if (out.includes('%.1f')) {
+            out = out.replace('%.1f', val.toFixed(1));
+          } else if (out.includes('%d')) {
+            out = out.replace('%d', Math.round(val));
+          } else if (out.includes('%f')) {
+            out = out.replace('%f', val.toFixed(6));
+          }
+        } else if (typeof val === 'boolean') {
+          out = out.replace('%b', val.toString());
+        } else {
+          if (out.includes('%c')) {
+            out = out.replace('%c', String(val).charAt(0));
+          } else {
+            out = out.replace('%s', String(val));
+          }
+        }
+      });
+
+      out = out.replace('%%', '%');
+      preview.textContent = `> ${out}`;
+    }
+
+    // ==================== REPORTE FINAL Y CERTIFICACIÓN ====================
+    function updateCertDate() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('cert-date').textContent = `Fecha de emisión: ${dateStr}`;
+    }
+
+    function updateCertificate() {
+      const name = document.getElementById('student-name').value.trim() || 'Estudiante';
+      const github = document.getElementById('student-github').value.trim() || 'usuario-github';
+
+      document.getElementById('cert-student-name').textContent = name;
+      document.getElementById('cert-student-github').textContent = `@${github.replace(/^@/, '')}`;
+
+      // Cálculo de la nota sobre 10
+      const totalCompleted = completedLevels.filter(Boolean).length;
+      const scoreOutOf10 = ((totalCompleted / 6) * 10).toFixed(1);
+      const certScore = document.getElementById('cert-score');
+      certScore.textContent = `${scoreOutOf10} / 10.0`;
+
+      if (totalCompleted === 6) {
+        certScore.className = "text-3xl font-extrabold text-utpl-yellow code-font";
+      } else if (totalCompleted >= 4) {
+        certScore.className = "text-3xl font-extrabold text-amber-300 code-font";
+      } else {
+        certScore.className = "text-3xl font-extrabold text-red-400 code-font";
+      }
+
+      // Desglose de niveles
+      const summaryList = document.getElementById('levels-summary-list');
+      summaryList.innerHTML = '';
+      levelsData.forEach((lvl, idx) => {
+        const item = document.createElement('div');
+        const done = completedLevels[idx];
+        item.className = `p-2 rounded-lg border flex items-center justify-between ${
+          done ? 'bg-utpl-blue border-utpl-yellow/60 text-utpl-yellow' : 'bg-utpl-blue-dark border-utpl-blue-light/30 text-blue-300/40'
+        }`;
+        item.innerHTML = `
+          <span class="font-medium">Nivel ${idx + 1}</span>
+          <i class="fa-solid ${done ? 'fa-circle-check text-utpl-yellow' : 'fa-circle-xmark text-blue-300/30'}"></i>
+        `;
+        summaryList.appendChild(item);
+      });
+    }
+
+    function copyCertificateReport() {
+      const name = document.getElementById('student-name').value.trim();
+      const github = document.getElementById('student-github').value.trim();
+
+      if (!name || !github) {
+        showModal(false, "Por favor completa tu Nombre y tu Usuario de GitHub antes de copiar el reporte.");
+        return;
+      }
+
+      const totalCompleted = completedLevels.filter(Boolean).length;
+      const score = ((totalCompleted / 6) * 10).toFixed(1);
+
+      const reportText = [
+        "==================================================",
+        "UNIVERSIDAD TÉCNICA PARTICULAR DE LOJA (UTPL)",
+        "REPORTE DE PRÁCTICA: JAVA String.format()",
+        "Clase 05 - Introducción a la Programación",
+        "==================================================",
+        `Estudiante     : ${name}`,
+        `GitHub         : https://github.com/${github.replace(/^@/, '')}`,
+        `Calificación   : ${score} / 10.0`,
+        `Niveles listos : ${totalCompleted} de 6`,
+        "--------------------------------------------------",
+        "Desglose por niveles:",
+        ...levelsData.map((l, i) => `  - Nivel ${i + 1} (${l.filename}): ${completedLevels[i] ? 'SUPERADO [OK]' : 'PENDIENTE'}`),
+        "=================================================="
+      ].join("\n");
+
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = reportText;
+      tempTextArea.style.position = 'fixed';
+      tempTextArea.style.left = '-9999px';
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+
+      try {
+        document.execCommand('copy');
+        sound.success();
+        showModal(true, "¡Reporte copiado al portapapeles! Puedes pegarlo en tu entrega de Canvas, Eva o tarea de GitHub.");
+      } catch (err) {
+        showModal(false, "No se pudo copiar automáticamente. Puedes seleccionar el texto del certificado manualmente.");
+      } finally {
+        document.body.removeChild(tempTextArea);
+      }
+    }
+
+    // ==================== MODAL (Sin alert) ====================
+    function showModal(isSuccess, message) {
+      const modal = document.getElementById('game-modal');
+      const iconCont = document.getElementById('modal-icon-container');
+      const title = document.getElementById('modal-title');
+      const msg = document.getElementById('modal-message');
+
+      if (isSuccess) {
+        iconCont.className = 'w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4 text-3xl bg-utpl-yellow/20 text-utpl-yellow border border-utpl-yellow';
+        iconCont.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+        title.textContent = '¡Completado!';
+      } else {
+        iconCont.className = 'w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4 text-3xl bg-amber-500/20 text-utpl-yellow border border-utpl-yellow/50';
+        iconCont.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        title.textContent = 'Aviso';
+      }
+
+      msg.textContent = message;
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      sound.click();
+      document.getElementById('game-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
